@@ -19,20 +19,19 @@ public class QuateUDPClient {
             // Buffers for sending and receiving data
             byte[] sendBuffer;
             byte[] receiveBuffer = new byte[1024];
-            System.out.println("Type messages to send to the server. Type 'exit' to quit.");
 
 
             while(true){
 
+                System.out.print("Enter GET for quote or exit to quit: ");
 
-                System.out.print("You: ");
                 String clientMessage = scanner.nextLine();
                 sendBuffer = clientMessage.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, serverAddress, serverPort); // Create a DatagramPacket to send the message to the server
                 clientSocket.send(sendPacket); //Sending the packet to the server
 
-                if (clientMessage.equalsIgnoreCase("exit")) { // Check if the client wants to terminate the connection
-                    System.out.println("Client is shutting down...");
+                if (clientMessage.toLowerCase().equalsIgnoreCase("exit")) { // Check if the client wants to terminate the connection
+                    System.out.println("Client finished");
                     break;// Exit the loop to shut down the client
                 }
 
@@ -41,7 +40,7 @@ public class QuateUDPClient {
                 DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                 clientSocket.receive(receivePacket);
                 String serverResponse = new String(receivePacket.getData(),0,receivePacket.getLength());
-                System.out.println("Server: " + serverResponse);
+                System.out.println(serverResponse);
             }
 
         }

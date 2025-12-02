@@ -10,9 +10,10 @@ public class QuateUDPServer {
 
         try{
 
-            String[] quotes = { "I think, therefore I exist.",
-                    "You only know me as you see me, not as I actually am",
-                    "I have striven not to laugh at human actions, ",
+            String[] quotes = {
+                    "I think, therefore I exist.",
+                    "You only know me as you see me, not as I actually am.",
+                    "I have striven not to laugh at human actions.",
                     "not to weep at them, nor to hate them, but to understand the",
                     "Great spirits have always encountered violent opposition from mediocore minds.",
                     "Where is the lamb sauce!"
@@ -34,19 +35,19 @@ public class QuateUDPServer {
 
                 // Extract the message from the received packet
                 String clientMessage = new String(receivePacket.getData(),0,receivePacket.getLength());
-                System.out.println("Received from client: " + clientMessage);
+                System.out.println("Request received: " + clientMessage);
 
 
                 String quote;
 
-                if (getValid(clientMessage)){
+                if (getValid(clientMessage)){ //If the client types 'GET', we'll generate a random quote
 
                     int randNum = new Random().nextInt(quotes.length);
                     quote = quotes[randNum];
                 }
-                else {
+                else { //If the user doesn't use the 'GET' request
 
-                    quote = "Incorrect format. Try again.";
+                    quote = "I only GET the things! You 'GET' it?\n Just kidding bro, but still it's: Invalid request. Try again.";
 
                 }
 
@@ -54,14 +55,13 @@ public class QuateUDPServer {
                 // Check if the client wants to terminate the connection
 
                 if (clientMessage.equalsIgnoreCase("exit")){ //Checking if the client wants to disconnect from the server
-                    System.out.println("Client requested to exit the server.");
-                    System.out.println("Client is disconnected");
+                    System.out.println("Server is shutting down.");
                     break;
                 }
 
 
                 //Sending the client a message from the server
-                String serverResponse = "Received " + quote;
+                String serverResponse = "Quote received: " + quote;
                 sendBuffer = serverResponse.getBytes(); //Convert the response to bytes
 
                 // Get the client's IP address and port from the received packet
