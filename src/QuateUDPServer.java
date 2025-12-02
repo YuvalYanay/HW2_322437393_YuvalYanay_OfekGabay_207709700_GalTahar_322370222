@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Random;
 
 public class QuateUDPServer {
 
@@ -9,7 +10,7 @@ public class QuateUDPServer {
 
         try{
 
-            String[] quates = { "I think, therefore I exist.",
+            String[] quotes = { "I think, therefore I exist.",
                     "You only know me as you see me, not as I actually am",
                     "I have striven not to laugh at human actions, ",
                     "not to weep at them, nor to hate them, but to understand the",
@@ -35,6 +36,21 @@ public class QuateUDPServer {
                 String clientMessage = new String(receivePacket.getData(),0,receivePacket.getLength());
                 System.out.println("Received from client: " + clientMessage);
 
+
+                String quote;
+
+                if (getValid(clientMessage)){
+
+                    int randNum = new Random().nextInt(quotes.length);
+                    quote = quotes[randNum];
+                }
+                else {
+
+                    quote = "Incorrect format. Try again.";
+
+                }
+
+
                 // Check if the client wants to terminate the connection
 
                 if (clientMessage.equalsIgnoreCase("exit")){ //Checking if the client wants to disconnect from the server
@@ -43,10 +59,9 @@ public class QuateUDPServer {
                     break;
                 }
 
+
                 //Sending the client a message from the server
-
-
-                String serverResponse = "Received " + clientMessage;
+                String serverResponse = "Received " + quote;
                 sendBuffer = serverResponse.getBytes(); //Convert the response to bytes
 
                 // Get the client's IP address and port from the received packet
@@ -69,6 +84,18 @@ public class QuateUDPServer {
 
         }
 
-
     }
+
+
+
+    public static Boolean getValid(String get){
+
+        if (get.toUpperCase().equals("GET")){
+            return true;
+        }
+
+        return false;
+    }
+
+
 }
