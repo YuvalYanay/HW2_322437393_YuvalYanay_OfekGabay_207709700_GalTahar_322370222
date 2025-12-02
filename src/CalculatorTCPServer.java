@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class CalculatorTCPServer {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         int port = 9090;
 
@@ -27,23 +27,40 @@ public class CalculatorTCPServer {
 
             while ((inputline = in.readLine()) != null) { //Looping for all the inputs from the client as long as it's not null
 
+
+                System.out.println("Received expression: " + inputline);
+
                 Boolean validFormat = formatFunc(inputline); //Validation of the format
-                String result = calculator(inputline); //Calculating the numbers
 
-                if (result == null){
-
-                    System.out.println("Error: Division by zero.");
-
+                if (inputline.toLowerCase().equals("close")){ //If client decides to exit
+                    break;
                 }
                 else if (!validFormat) {
-                    System.out.println("Error: Invalid expression.");
+
+                    out.println(inputline + " = Error: Invalid expression.");
                 }
                 else {
-                    System.out.println(inputline + " = " + result); //Return to the client the valid result
+
+                    String result = calculator(inputline); //Calculating the numbers
+
+                    if (result == null){
+
+                        out.println(inputline + " = Error: Division by zero.");
+                    }
+                    else {
+
+                        out.println(inputline + " = " + result); //Return to the client the valid result
+
+                    }
 
                 }
+
+
+
             }
 
+            System.out.println("Client requested to close connection.");
+            System.out.println("Client disconnected");
             //Closing everything
             in.close();
             out.close();
@@ -60,7 +77,7 @@ public class CalculatorTCPServer {
     public static Boolean formatFunc(String input){
 
 
-        if(input.matches("\\d+\\s*[+\\-*/]\\s*\\d+")){
+        if(input.matches("\\d+\\s[+\\-*/]\\s\\d+")){
 
             return true;
 
@@ -72,50 +89,63 @@ public class CalculatorTCPServer {
 
     public static String calculator(String input){
 
-        int[] operators = {'+', '-', '*', '/'};
+        Character[] operators = {'+', '-', '*', '/'};
 
-        ArrayList<Integer> nums = new ArrayList<>();
+
+        StringBuilder strNum1 = new StringBuilder();
+        StringBuilder strNum2 = new StringBuilder();
         char exeOperator = ' ';
+        Boolean isOperator = false;
 
         for(int i = 0; i < input.length(); i++){
 
-            if( Character.isDigit(input.charAt(i)) ){
+            if( Character.isDigit(input.charAt(i)) && !isOperator){
 
-                nums.add(Integer.parseInt(String.valueOf(input.charAt(i))));
+               strNum1.append(String.valueOf(input.charAt(i))) ;
 
             }
-            if(Arrays.asList(operators).contains(input.charAt(i))){
+            else if(Arrays.asList(operators).contains(input.charAt(i))){
 
                 exeOperator = input.charAt(i);
+                isOperator = true;
+
+            } else if (Character.isDigit(input.charAt(i)) && isOperator) {
+
+               strNum2 = strNum2.append(String.valueOf(input.charAt(i))) ;
 
             }
 
         }
 
+        int num1 = Integer.parseInt(strNum1.toString());
+        int num2 = Integer.parseInt(strNum2.toString());
+
 
        switch (exeOperator){
 
            case '+':
-               return Integer.toString(nums.get(0) + nums.get(1));
+               return Integer.toString(num1 + num2);
 
            case '-':
-               return Integer.toString(nums.get(0) + nums.get(1));
+               return Integer.toString(num1 - num2);
 
            case '*':
-               return Integer.toString(nums.get(0) + nums.get(1));
+               return Integer.toString(num1 * num2);
 
            case '/':
 
-               if (nums.get(1) != 0){
-                   return Integer.toString(nums.get(0) + nums.get(1));
+               if (num2 != 0){
+                   return Integer.toString(num1 / num2);
                }
 
                return null;
 
            default:
 
-               throw new IllegalArgumentException("Illegal numbers");
-       }
+               return null;
+
+
+        }
 
 
     }
