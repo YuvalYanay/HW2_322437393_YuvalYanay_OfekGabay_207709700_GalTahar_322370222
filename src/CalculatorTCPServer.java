@@ -27,7 +27,7 @@ public class CalculatorTCPServer {
 
             while ((inputline = in.readLine()) != null) { //Looping for all the inputs from the client as long as it's not null
 
-                Boolean validFormat = formatFunc(inputline);
+                Boolean validFormat = formatFunc(inputline); //Validation of the format
                 String result = calculator(inputline); //Calculating the numbers
 
                 if (result == null){
@@ -35,8 +35,13 @@ public class CalculatorTCPServer {
                     System.out.println("Error: Division by zero.");
 
                 }
+                else if (!validFormat) {
+                    System.out.println("Error: Invalid expression.");
+                }
+                else {
+                    System.out.println(inputline + " = " + result); //Return to the client the valid result
 
-                System.out.println(inputline + " = " + Integer.toString(result)); //Return the client the result
+                }
             }
 
             //Closing everything
@@ -54,6 +59,14 @@ public class CalculatorTCPServer {
 
     public static Boolean formatFunc(String input){
 
+
+        if(input.matches("\\d+\\s*[+\\-*/]\\s*\\d+")){
+
+            return true;
+
+        }
+
+        return false;
 
     }
 
